@@ -1,23 +1,39 @@
-import { ethers } from "hardhat";
+import { ethers, run, network } from "hardhat";
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const ONE_YEAR_IN_SECS = 365 * 24 * 60 * 60;
-  const unlockTime = currentTimestampInSeconds + ONE_YEAR_IN_SECS;
+  const PiggyBank = await ethers.getContractFactory(
+    "piggyBank"
+  )
+  const piggyBank = await PiggyBank.deploy();
+  await piggyBank.deployed();
 
-  const lockedAmount = ethers.utils.parseEther("1");
-
-  const Lock = await ethers.getContractFactory("Lock");
-  const lock = await Lock.deploy(unlockTime, { value: lockedAmount });
-
-  await lock.deployed();
-
-  console.log(`Lock with 1 ETH and unlock timestamp ${unlockTime} deployed to ${lock.address}`);
+  console.log("PiggyBank deployed to: ", piggyBank.address);
+  if (network.config.chainId === 4 && process.env.ETHERSCAN_API_KEY) {
+    console.log("Waiting for block txes...")
+    await piggyBank.deployTransaction.wait(6)
+    await verify(piggyBank.address, [])
+  }
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+const verify = async (contractAddress: string, args: any[]) => {
+  console.log("Verify contract...")
+  try {
+    await run("verify:verify", {
+      address: contractAddress, 
+      constructorArguments: args,
+    })
+  } catch (e: any) {
+    if (e.message.toLowerCase().includes("already verified")) {
+      console.log("Already Verified")
+    } else {
+      console.log(e)
+    }
+  }
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });

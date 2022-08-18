@@ -1,25 +1,33 @@
-
+// import { HardhatUserConfig } from "hardhat/config";
 require("dotenv").config({ path: ".env" });
 import "@nomicfoundation/hardhat-toolbox";
 import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomicfoundation/hardhat-chai-matchers";
+// import "@nomiclabs/hardhat-waffle";
+// import { task } from 'hardhat/config';
+// require("@nomiclabs/hardhat-etherscan");
 
+// const config: HardhatUserConfig = {
+//   solidity: "0.8.9",
+// };
+
+// export default config;
+// require("@nomicfoundation/hardhat-toolbox")
+// import("dotenv")
 
 require("@nomiclabs/hardhat-ethers")
 require("@nomiclabs/hardhat-ethers");
-
+// require("@nomicfoundation/hardhat-chai-matchers");
+// require("./tasks/block-number")
 require("hardhat-gas-reporter")
 require("solidity-coverage")
-
+// require("hardhat-deploy")
 
 const RINKEBY_RPC_URL = process.env.RINKEBY_RPC_URL
 const ROPSTEN_RPC_URL = process.env.ROPSTEN_RPC_URL
 const PRIVATE_KEY = process.env.PRIVATE_KEY 
-// @ts-ignore
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY
-
-=
 
 module.exports = {
   defaultNetwork: "hardhat",
@@ -42,9 +50,9 @@ module.exports = {
       blockConfirmations: 6,
     },
   },
-  // etherscan: {
-  //   apiKey: ETHERSCAN_API_KEY
-  // },
+  etherscan: {
+    apiKey: ETHERSCAN_API_KEY
+  },
   solidity: {
     compilers: [{ version: "0.8.9" }, { version: "0.6.6" }],
   },
