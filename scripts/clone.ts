@@ -1,7 +1,6 @@
 require("dotenv").config({ path: ".env" });
 import { ethers } from "hardhat";
 import { BytesLike } from "ethers";
-// const helpers = require("@nomicfoundation/hardhat-network-helpers");
 
 async function main() {
     let provider = {
@@ -14,14 +13,19 @@ let wallet = new ethers.Wallet(provider.PrivateKey, provider2);
 const _value = ethers.utils.parseEther("1");
 
 const CONTRACTADDRESS = "0x62EDC54900a15543a84Dd760B5Ca5E0d49896a87";
-const piggyBankFactory = await ethers.getContractFactory("PiggyBank");
-const PiggyBankFactory = piggyBankFactory.attach(CONTRACTADDRESS);
+const PiggyBankFactory = await ethers.getContractAt("IPiggyBank", CONTRACTADDRESS);
 
 /// TRANSFER ETHER TO WALLET
+ await wallet.sendTransaction({ to: CONTRACTADDRESS, value: _value });
+ console.log("contractBalanc", await PiggyBankFactory.contractBalance());
  await wallet.sendTransaction({ to: CONTRACTADDRESS, value: _value });
 
 const contractBalance = provider2.getBalance(PiggyBankFactory.address);
  console.log("contractBalance: ", contractBalance);
+
+const withdrawBalance =await PiggyBankFactory.withdraw();
+const bal = withdrawBalance.wait();
+console.log("Collect your money", bal);
 }
 
 // 0x62EDC54900a15543a84Dd760B5Ca5E0d49896a87
